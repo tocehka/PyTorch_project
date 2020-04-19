@@ -12,17 +12,18 @@ conf = Config()
 writer = WriterManager(file_name=conf.csv_file)
 LABEL_CHECKER = "Артикул"
 DELIMETR = "^"
-RESOURSE_CONN_VERIFY_STR = "Ваша надежная торговая марка"
+# RESOURSE_CONN_VERIFY_STR = "Страница"
+# RESOURSE_CONN_VERIFY_STR_PRIMAL = "Ваша надежная торговая марка"
+PAGE_STEP = 24
+GET_PARAMS = "?module=Catalog&ajax=1&cmd=showmore&from="
 proxy = ProxyList()
 proxies = proxy.get()
 
 def get_page(url):
     try:
-        r = requests.get(url)
-        if RESOURSE_CONN_VERIFY_STR in r.text:
-            return r.text
-        else:
-            raise Exception("e")
+        r = requests.get(url, timeout=10)
+        print(r.status_code)
+        return r.text
     except:
         print("Resourse banned default IP at " + datetime.datetime.now().isoformat())
         for proxy in proxies:
@@ -30,8 +31,10 @@ def get_page(url):
                 "http": "http://" + proxy,
                 "https": "https://" + proxy
             }
+            print(proxy)
             try:
-                r = requests.get(url, proxies=proxy_item)
+                r = requests.get(url, proxies=proxy_item, timeout=10)
+                print(r.status_code)
                 return r.text
             except:
                 print("Resourse banned " + proxy + " at " + datetime.datetime.now().isoformat())
@@ -41,19 +44,25 @@ def get_page(url):
 def get_items_url(category):
     page = get_page(conf.base_url + category)
     soup = BeautifulSoup(page, conf.xml_preprocessor)
-    items_field = soup.find("ul", class_="catalog_list_main").find_all("div", class_="title")
-    urls = []
-    for item in items_field:
-        for url in item:
-            urls.append(url.get("href"))
-            get_item_info(url.get("href"),category)
+    quantity = soup.find("div", class_="block qty").find_all("b")
+    print(quantity[0].getText())
+    for step in range(0, int(quantity[0].getText()), PAGE_STEP):
+        page = get_page(conf.base_url + category + GET_PARAMS + str(step))
+        soup = BeautifulSoup(page, conf.xml_preprocessor)
+        items_field = soup.find("ul", class_="catalog_list_main").find_all("div", class_="title")
+        for item in items_field:
+            for url in item:
+                get_item_info(url.get("href"), category)
 
 def get_item_info(url, category):
     page = get_page(conf.base_url + url)
     soup = BeautifulSoup(page, conf.xml_preprocessor)
     parsed_item_attributes_title = soup.find("div", class_="item_params").find_all("div", class_="title")
     parsed_item_attributes = soup.find("div", class_="item_params").find_all("div", class_="body")
+    name = soup.find("div", class_="top_nav").find_all("h1")
     item_attributes = []
+    item_attributes.append("Наименование" + DELIMETR + name[0].getText())
+    item_attributes.append("Категория" + DELIMETR + category.replace("/",""))
     label = ""
     if len(parsed_item_attributes_title) == len(parsed_item_attributes):
         for i in range(0, len(parsed_item_attributes)):
@@ -71,13 +80,17 @@ def get_item_info(url, category):
             break
         item_attributes[-1] = item_attributes[-1] + conf.img_dir + category + "/" + label + "/" + img_url.split("/")[-1] + ","
         get_item_image(label, category, img_url)
+    print(label)
     writer.write_row(item_attributes)
 
 def get_item_image(label, category, img_url):
     label = "/" + label + "/"
-    print(img_url)
     Path(conf.img_dir + category + "/" + label).mkdir(parents=True, exist_ok=True)
-    urllib.request.urlretrieve(conf.base_url + img_url, conf.img_dir + category + label + img_url.split("/")[-1])
+    print(conf.base_url + img_url)
+    try:
+        urllib.request.urlretrieve(conf.base_url + img_url, conf.img_dir + category + label + img_url.split("/")[-1])
+    except:
+        pass
 
 def main():
     page = get_page(conf.base_url)
