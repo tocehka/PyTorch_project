@@ -1,6 +1,6 @@
 {
     "base_url": "http://ledeme-russia.ru",
-    "csv_file": "data.csv",
+    "csv_file": "data2.csv",
     "result_file": "result.csv",
     "img_dir": "./images",
     "removing_part": "ledeme-russia.ru",

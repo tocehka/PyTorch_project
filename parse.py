@@ -18,14 +18,18 @@ PAGE_STEP = 24
 GET_PARAMS = "?module=Catalog&ajax=1&cmd=showmore&from="
 proxy = ProxyList()
 proxies = proxy.get()
+ALLOWED_STATUS = 200
+
+#Resumption param
+first_step = True
 
 def get_page(url):
     try:
-        r = requests.get(url, timeout=10)
+        r = requests.get(url, timeout=15)
         print(r.status_code)
         return r.text
     except:
-        print("Resourse banned default IP at " + datetime.datetime.now().isoformat())
+        print("Resourse was out of timeout with default IP at " + datetime.datetime.now().isoformat())
         for proxy in proxies:
             proxy_item = {
                 "http": "http://" + proxy,
@@ -33,12 +37,16 @@ def get_page(url):
             }
             print(proxy)
             try:
-                r = requests.get(url, proxies=proxy_item, timeout=10)
+                r = requests.get(url, proxies=proxy_item, timeout=5)
                 print(r.status_code)
+                if r.status_code != ALLOWED_STATUS:
+                    raise Exception("Error HTTP code status was recieved: {}".format(r.status_code))
                 return r.text
-            except:
-                print("Resourse banned " + proxy + " at " + datetime.datetime.now().isoformat())
-                proxies.remove(proxy)
+            except Exception as err:
+                print(err)
+                get_page(url)
+            except requests.exceptions.Timeout:
+                print("Resourse was out of timeout with " + proxy + " at " + datetime.datetime.now().isoformat())
                 continue
 
 def get_items_url(category):
@@ -46,13 +54,20 @@ def get_items_url(category):
     soup = BeautifulSoup(page, conf.xml_preprocessor)
     quantity = soup.find("div", class_="block qty").find_all("b")
     print(quantity[0].getText())
-    for step in range(0, int(quantity[0].getText()), PAGE_STEP):
+    global first_step
+    if first_step:
+        first_step = False
+        first_point = 250
+    else:
+        first_point = 0
+    for step in range(first_point, int(quantity[0].getText()), PAGE_STEP):
         page = get_page(conf.base_url + category + GET_PARAMS + str(step))
         soup = BeautifulSoup(page, conf.xml_preprocessor)
         items_field = soup.find("ul", class_="catalog_list_main").find_all("div", class_="title")
         for item in items_field:
             for url in item:
                 get_item_info(url.get("href"), category)
+    
 
 def get_item_info(url, category):
     page = get_page(conf.base_url + url)
@@ -96,7 +111,8 @@ def main():
     page = get_page(conf.base_url)
     soup = BeautifulSoup(page, conf.xml_preprocessor)
     all_links = soup.find("ul", class_="children").find_all("li")
-    for link in all_links:
+    # --------------- Was modified
+    for link in all_links[1:]:
         if len(link.find("a").get("href").split("/")) <= 3:
             category = link.find("a").get("href")
             print(category + "--------------------------------")
