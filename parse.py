@@ -21,7 +21,7 @@ proxies = proxy.get()
 ALLOWED_STATUS = 200
 
 #Resumption param
-first_step = True
+first_step = False
 
 def get_page(url):
     try:
@@ -49,18 +49,25 @@ def get_page(url):
                 print("Resourse was out of timeout with " + proxy + " at " + datetime.datetime.now().isoformat())
                 continue
 
+def get_group_params(soup):
+    try:
+        quantity = soup.find("div", class_="block qty").find_all("b")
+        return int(quantity[0].getText())
+    except:
+        print("0 items in group")
+        return 0
+
 def get_items_url(category):
     page = get_page(conf.base_url + category)
     soup = BeautifulSoup(page, conf.xml_preprocessor)
-    quantity = soup.find("div", class_="block qty").find_all("b")
-    print(quantity[0].getText())
+    quantity = get_group_params(soup)
     global first_step
     if first_step:
         first_step = False
         first_point = 250
     else:
         first_point = 0
-    for step in range(first_point, int(quantity[0].getText()), PAGE_STEP):
+    for step in range(first_point, 760, PAGE_STEP):
         page = get_page(conf.base_url + category + GET_PARAMS + str(step))
         soup = BeautifulSoup(page, conf.xml_preprocessor)
         items_field = soup.find("ul", class_="catalog_list_main").find_all("div", class_="title")
@@ -91,10 +98,10 @@ def get_item_info(url, category):
         img_url = img.find("img").get("src").replace(conf.removing_part,'')
         if img == item_imgs[-1]:
             item_attributes[-1] = item_attributes[-1] + conf.img_dir + category + "/" + label + "/" + img_url.split("/")[-1]
-            get_item_image(label, category, img_url)
+            #get_item_image(label, category, img_url)
             break
         item_attributes[-1] = item_attributes[-1] + conf.img_dir + category + "/" + label + "/" + img_url.split("/")[-1] + ","
-        get_item_image(label, category, img_url)
+        #get_item_image(label, category, img_url)
     print(label)
     writer.write_row(item_attributes)
 
@@ -111,8 +118,7 @@ def main():
     page = get_page(conf.base_url)
     soup = BeautifulSoup(page, conf.xml_preprocessor)
     all_links = soup.find("ul", class_="children").find_all("li")
-    # --------------- Was modified
-    for link in all_links[1:]:
+    for link in all_links[:1]:
         if len(link.find("a").get("href").split("/")) <= 3:
             category = link.find("a").get("href")
             print(category + "--------------------------------")
@@ -120,3 +126,4 @@ def main():
             get_items_url(category)
 
 main()
+del writer

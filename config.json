@@ -1,7 +1,7 @@
 {
     "base_url": "http://ledeme-russia.ru",
-    "csv_file": "data2.csv",
-    "result_file": "result.csv",
+    "csv_file": "data.csv",
+    "db_file": "db.csv",
     "img_dir": "./images",
     "removing_part": "ledeme-russia.ru",
     "proxy_url": "https://api.proxyscrape.com/?request=getproxies&proxytype=http&timeout=10000&country=RU&ssl=all&anonymity=all",
