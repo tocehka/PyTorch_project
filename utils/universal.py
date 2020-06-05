@@ -33,8 +33,9 @@ def create_indexed_nlp_dict(arr, index):
     for field in arr:
         if field.split(DELIMETER)[0] in DELETE_GROUP:
             continue
-        listd.append(field.split(DELIMETER)[0].lower())
         listd.append(field.split(DELIMETER)[1].lower())
-    return {"set":allowed_lexeme_list(listd), "index":index}
+    prep_list = allowed_lexeme_list(listd)
+    prep_list = [word for n, word in enumerate(prep_list) if word not in prep_list[:n]]
+    return {"sentence": prep_list, "index":index}
     
 

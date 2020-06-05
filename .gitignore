@@ -3,3 +3,7 @@
 **/__pycache__
 *.csv
 /images
+**/*.bin
+/ft_russian
+/encoder
+**/.DS_Store
