@@ -3,7 +3,7 @@
 
 ## Requirements:
 1. Python 3.6 or higher
-2. List of dependencies specify in setup.py
+2. List of dependencies specified in setup.py
 
 For installation all dependencies necessary write in console
 <code>pip install .</code>
