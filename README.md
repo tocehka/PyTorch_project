@@ -41,21 +41,29 @@ For installation all dependencies necessary write in console
 
 # Results:
 Number of positions: 1742
+
 Found 2605(/2607) words with w2v vectors
+
 Vocab size : 2605
+
 SIF create indexes for embeddings
 
 Search by FSE + Smooth Inverse Frequency (FastText):
 
-Time was spent for positions search: 0.11711311340332031
+Time was spent for positions search: 0.11711311340332031 seconds
+
 Benchmark accuracy: 0.21515151515151515
+
 All positions from dirty database: 330
+
 Loading index from hnswidx/indexes.bin
 
 Search by HNSW + InfraSent (FastText):
 
-Time was spent for positions search: 5.047646999359131
+Time was spent for positions search: 5.047646999359131 seconds
+
 Benchmark accuracy: 0.603030303030303
+
 All positions from dirty database: 330
 
 ### Total accuracy was couted as at least one entry of true item article of K nearest neighbors. In our case - it is 5.
