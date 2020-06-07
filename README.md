@@ -50,9 +50,9 @@ SIF create indexes for embeddings
 
 Search by FSE + Smooth Inverse Frequency (FastText):
 
-Time was spent for positions search: 0.11711311340332031 seconds
+<b>Time was spent for positions search: 0.11711311340332031 seconds</b>
 
-Benchmark accuracy: 0.21515151515151515
+<b>Benchmark accuracy: 0.21515151515151515</b>
 
 All positions from dirty database: 330
 
@@ -60,9 +60,9 @@ Loading index from hnswidx/indexes.bin
 
 Search by HNSW + InfraSent (FastText):
 
-Time was spent for positions search: 5.047646999359131 seconds
+<b>Time was spent for positions search: 5.047646999359131 seconds</b>
 
-Benchmark accuracy: 0.603030303030303
+<b>Benchmark accuracy: 0.603030303030303</b>
 
 All positions from dirty database: 330
 
