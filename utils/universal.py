@@ -3,7 +3,8 @@ import json
 from nlp import allowed_lexeme_list
 
 DELIMETER = "^"
-DELETE_GROUP = ["Категория", "images_path", "Гарантийный срок", "Размеры (см.)"]
+DELETE_GROUP = ["Категория", "images_path", "Гарантийный срок", "Размеры (см.)", "Артикул"]
+CMP_LABEL = "Артикул"
 
 def max_length_index(arr):
     max_val = 0
@@ -25,17 +26,21 @@ def parsed_list_to_dict(arr, index=False):
 def dict_to_json(dictd, index=False):
     if not isinstance(index, int) and index == False:
         return json.dumps(dictd, ensure_ascii=False)
-    return {"data":json.dumps(dictd, ensure_ascii=False), "index":index}
+    return {"data":json.dumps(dictd, ensure_ascii=False), "index": index}
 
 
 def create_indexed_nlp_dict(arr, index):
     listd = []
+    article = None
     for field in arr:
+        if field.split(DELIMETER)[0] == CMP_LABEL:
+            article = field.split(DELIMETER)[1].lower()
         if field.split(DELIMETER)[0] in DELETE_GROUP:
             continue
         listd.append(field.split(DELIMETER)[1].lower())
     prep_list = allowed_lexeme_list(listd)
+    prep_list.insert(0, article)
     prep_list = [word for n, word in enumerate(prep_list) if word not in prep_list[:n]]
-    return {"sentence": prep_list, "index":index}
+    return {"sentence": prep_list, "index": index, "article": article}
     
 

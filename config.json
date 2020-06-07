@@ -9,5 +9,6 @@
     "ft_vectors_path": "ft_saved_model/ft_vec.vec",
     "ft_model_path": "ft_saved_model/ft_model.bin",
     "infs_model_path": "encoder/infersent2.pkl",
-    "hnsw_indexes": "hnswidx/indexes.bin"
+    "hnsw_indexes": "hnswidx/indexes.bin",
+    "dirty_excel": "dirty_data.xlsx"
 }

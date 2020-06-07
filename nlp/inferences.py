@@ -1,5 +1,5 @@
 import nltk
-#nltk.download('punkt')
+nltk.download('punkt')
 import torch
 from config import Config
 from .nlp_models import InferSent
