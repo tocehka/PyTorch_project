@@ -14,6 +14,7 @@ class DataCompiler:
                 data = csv.reader(csv_file)
                 self.__data_array.extend(data)
         self.__data_array = np.unique(np.array(self.__data_array))
+
     def compile_to_db_csv(self):
         header = dict_to_json(parsed_list_to_dict(self.__data_array[0]), 0).keys()
         conf = Config()
@@ -22,6 +23,7 @@ class DataCompiler:
             print(dict_to_json(parsed_list_to_dict(item), i))
             writer.write_row(dict_to_json(parsed_list_to_dict(item), i))
         del writer
+        
     def compile_to_preprocessed_data(self):
         listd = []
         for i, item in enumerate(self.__data_array):

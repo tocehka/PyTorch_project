@@ -5,5 +5,9 @@
     "img_dir": "./images",
     "removing_part": "ledeme-russia.ru",
     "proxy_url": "https://api.proxyscrape.com/?request=getproxies&proxytype=http&timeout=10000&country=RU&ssl=all&anonymity=all",
-    "xml_preprocessor": "lxml"
+    "xml_preprocessor": "lxml",
+    "ft_vectors_path": "ft_saved_model/ft_vec.vec",
+    "ft_model_path": "ft_saved_model/ft_model.bin",
+    "infs_model_path": "encoder/infersent2.pkl",
+    "hnsw_indexes": "hnswidx/indexes.bin"
 }

@@ -3,7 +3,7 @@ import json
 from nlp import allowed_lexeme_list
 
 DELIMETER = "^"
-DELETE_GROUP = ["Категория", "images_path"]
+DELETE_GROUP = ["Категория", "images_path", "Гарантийный срок", "Размеры (см.)"]
 
 def max_length_index(arr):
     max_val = 0
