@@ -22,10 +22,9 @@ For installation all dependencies necessary write in console
 
 ## For InferSent working you necessary download pre-trained model infersent2:
 
-<code>
-mkdir encoder
-curl -Lo encoder/infersent2.pkl https://dl.fbaipublicfiles.com/infersent/infersent2.pkl
-</code>
+<code>mkdir encoder</code>
+
+<code>curl -Lo encoder/infersent2.pkl https://dl.fbaipublicfiles.com/infersent/infersent2.pkl</code>
 
 # Project start priority:
 - You need parse data with help of run:
