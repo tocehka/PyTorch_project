@@ -1,7 +1,7 @@
 import hnswlib
 import numpy as np
 from utils import DataCompiler
-from nlp.inferences import create_infersent_model
+from nlp.inferences import create_infersent_model, create_fse_model
 from nlp.embedding import create_fasttext_embeddings
 from config import Config
 from pathlib import Path
@@ -16,8 +16,12 @@ print("Length of positions: ", len(data))
 print("Creating FastText vectors")
 create_fasttext_embeddings(data)
 
-print("Creating InfraSent model for indexes")
+print("Creating InferSent model for indexes")
 infsent = create_infersent_model(data)
+
+# print("Creating SIF FSE model for indexes")
+# fse, idxs = create_fse_model(data)
+
 
 print("Start creating indexes")
 dim = 4096
@@ -27,14 +31,15 @@ embeddings = []
 labels = []
 for i, sentence in enumerate(data):
     print(f"{i+1} of {len(data)} is embedding")
+    # embeddings.append(fse.sv.get_vector(sentence["index"]))
+    # labels.append(sentence["index"])
     embeddings.append(infsent.encode([" ".join(sentence["sentence"])])[0])
     labels.append(sentence["index"])
 
-
-p = hnswlib.Index(space = 'cosine', dim = dim)
-p.init_index(max_elements = num_elements, ef_construction = 200, M = 16)
+p = hnswlib.Index(space = 'l2', dim = dim)
+p.init_index(max_elements = num_elements, ef_construction = 330, M = 28)
 p.add_items(embeddings, labels)
-p.set_ef(70)
+p.set_ef(180)
 
 labels, distances = p.knn_query(embeddings, k=1)
 print("Recall for the positions:", np.mean(labels.reshape(-1) == np.arange(len(embeddings))))

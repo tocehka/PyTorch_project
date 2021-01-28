@@ -8,16 +8,19 @@ conf = Config()
 def create_fasttext_embeddings(sentences):
     sentences = [sent["sentence"] for sent in sentences]
     embedding_size = 300
-    window_size = 10
+    window_size = 70
     min_word = 1
-    down_sampling = 0.0005
-    iter_num = 200
+    down_sampling = 0.00001
+    iter_num = 500
+    min_alpha = 0.00001
     print("FastText started for train")
     ft = FastText(size=embedding_size,
                     window=window_size,
                     min_count=min_word,
                     sample=down_sampling,
-                    sg=1)
+                    sg=1,
+                    min_alpha=min_alpha,
+                    negative=15)
     ft.build_vocab(sentences=sentences)
     ft.train(sentences=sentences, total_examples=ft.corpus_count, epochs=iter_num)
     Path(conf.ft_vectors_path.split("/")[0]).mkdir(parents=True, exist_ok=True)
@@ -29,7 +32,7 @@ def load_fasttext_model():
     return FastText.load(conf.ft_model_path)
 
 def update_fasttext_model(sentences):
-    iter_num = 200
+    iter_num = 300
     sentences = [sent["sentence"] for sent in sentences]
     print("FastText started for updating")
     ft = FastText.load(conf.ft_model_path)

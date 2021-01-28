@@ -6,7 +6,12 @@ from nlp.preprocessing.utils import prepare_sentence
 import numpy as np
 
 @benchmark
-def collate_DB(clean, dirty, model, engine):
+def collate_DB_bench(clean, dirty, model, engine):
+    search = SearchPosition(model, engine=engine)
+    labels, distances = search.search(dirty, n=7, logs=False)
+    return labels, distances
+
+def collate_DB(dirty, model, engine):
     search = SearchPosition(model, engine=engine)
     labels, distances = search.search(dirty, n=5, logs=False)
     return labels, distances
@@ -19,22 +24,26 @@ if __name__ == "__main__":
     print("Number of positions:", num_elements)
 
     infsent_model = create_infersent_model(data)
-    fse_model, indxs = create_fse_model(data)
+    #fse_model, indxs = create_fse_model(data)
 
     dirty_data = dirty_load_and_process()
-    # print(dirty_data)
+    #print(dirty_data)
 
-    labels, distances = collate_DB(data, dirty_data, fse_model, "fse")
+    #labels, distances = collate_DB_bench(data, dirty_data, fse_model, "fse")
+    labels, distances = collate_DB_bench(data, dirty_data, infsent_model, "hnsw")
+    #labels, distances = collate_DB_bench(data, dirty_data, fse_model, "fse_hnsw")
 
-    labels, distances = collate_DB(data, dirty_data, infsent_model, "hnsw")
+    """ query = prepare_sentence(["смеситель l4299a Ledeme"])
+    print("Search for:", query)
+    labels, distances = collate_DB(query, fse_model, "fse")
+    labels, distances = labels[0], distances[0]
+    print("FSE:")
+    for i in range(len(labels)):
+        print(i, ":", data[labels[i]], distances[i])
 
-    # query = prepare_sentence("Набор+ Ledeme. пластиковый L421-1 (красный).")
-    # print("Search for:", query)
-    # print("Start search module\n")
-
-    # fse_search = SearchPosition(fse_model, engine="fse")
-    # fse_search.search([query.split()], indexes=indxs, n=5)
-
-    # hnsw_search = SearchPosition(infsent_model, engine="hnsw")
-    # hnsw_search.search([query], indexes=data, n=5)
+    labels, distances = collate_DB(query, infsent_model, "hnsw")
+    print("HNSW:")
+    labels, distances = labels[0], distances[0]
+    for i in range(len(labels)):
+        print(i, ":", data[labels[i]], distances[i]) """
     

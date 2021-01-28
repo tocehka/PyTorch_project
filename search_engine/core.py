@@ -15,7 +15,7 @@ class SearchPosition:
 
         if self.engine == "hnsw":
             dim = 4096
-            p = hnswlib.Index(space='cosine', dim=dim)
+            p = hnswlib.Index(space='l2', dim=dim)
             print(f"Loading index from {self.conf.hnsw_indexes}")
             p.load_index(self.conf.hnsw_indexes)
             print("\nSearch by HNSW + InfraSent (FastText):\n")
@@ -43,3 +43,20 @@ class SearchPosition:
                 labels.append([el[0] for el in res])
                 distances.append([el[1] for el in res])
             return labels, distances
+        
+        elif self.engine == "fse_hnsw":
+            dim = 300
+            p = hnswlib.Index(space='l2', dim=dim)
+            print(f"Loading index from {self.conf.hnsw_indexes}")
+            p.load_index(self.conf.hnsw_indexes)
+            print("\nSearch by FSE + HNSW:\n")
+            embeddings = []
+            for sent in query_sent:
+                embeddings.append(self.model.infer([(sent, 0)])[0])
+            labels, distances = p.knn_query(embeddings, k=n)
+            if not logs:
+                return labels, distances
+            print(labels, distances)
+            for label in labels[0]:
+                print(indexes[label])
+            print("\n")
